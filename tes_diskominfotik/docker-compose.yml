@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Layanan untuk aplikasi Laravel
+  app:
+    image: laravelphp/php-fpm
+    container_name: tes_dikominfotik
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    networks:
+      - laravel-network
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - "DB_HOST=mysql"
+      - "DB_PORT=3306"
+      - "DB_DATABASE=tes_dikominfotik"
+      - "DB_USERNAME=root"
+      - "DB_PASSWORD="
+      - "REDIS_HOST=redis"
+      - "REDIS_PASSWORD=null"
+      - "REDIS_PORT=6379"
+
+  # Layanan untuk MySQL
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tes_dikominfotik
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - laravel-network
+
+  # Layanan untuk Redis
+  redis:
+    image: redis:alpine
+    container_name: redis-cache
+    restart: unless-stopped
+    networks:
+      - laravel-network
+
+  # Layanan untuk Nginx (opsional, jika Anda ingin menggunakan Nginx untuk Laravel)
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-server
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    networks:
+      - laravel-network
+    depends_on:
+      - app
+
+networks:
+  laravel-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
