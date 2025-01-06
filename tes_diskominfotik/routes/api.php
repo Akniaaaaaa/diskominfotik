@@ -39,11 +39,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/task/del/{id}', [TaskController::class, 'destroy'])->name('del_item');
 
     // Berbagi task dengan pengguna lain
-    Route::post('/tasks/{task}/share', [TaskSharingController::class, 'shareTask']);
+    Route::post('/tasks/{task}/share', [TaskSharingController::class, 'shareTask'])->name('share_task');
 
     // Melihat daftar pengguna yang memiliki akses ke task
-    Route::get('/tasks/{task}/users', [TaskSharingController::class, 'getUsersWithAccess']);
+    Route::get('/tasks/{task}/users', [TaskSharingController::class, 'getUsersWithAccess'])->name('userListAcces');
 
     // Menghapus akses pengguna dari task
-    Route::post('/tasks/{task}/remove-access', [TaskSharingController::class, 'removeUserAccess']);
+    Route::post('/tasks/{task}/remove-access', [TaskSharingController::class, 'removeUserAccess'])->name('removeAccess');
 });
